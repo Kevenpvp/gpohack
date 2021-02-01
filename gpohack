@@ -13,7 +13,7 @@ local tweenService = game:GetService("TweenService")
 
 --Locals vars
 local vu = game:GetService("VirtualUser")
-local library = loadstring(game:HttpGet("https://pastebin.com/raw/Kvfske7M"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kevenpvp/gpohack/main/uilibray"))()
 local runService = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 local humanoid = player.Character:WaitForChild("Humanoid")
