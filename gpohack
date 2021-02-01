@@ -1,0 +1,977 @@
+--Events
+local EventCombat = game:GetService("ReplicatedStorage").Events.CombatRegister
+local EventQuest = game:GetService("ReplicatedStorage").Events.Quest
+local EventShip = game:GetService("ReplicatedStorage").Events.ShipEvents.Spawn
+local EventDrop = game:GetService("ReplicatedStorage").Events.Tools
+local EventStoreFruits = game:GetService("ReplicatedStorage").Events.FruitStorage
+local EventHaki = game:GetService("ReplicatedStorage").Events.Haki 
+
+--Services
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local MarketPlaceService = game:GetService("MarketplaceService")
+local tweenService = game:GetService("TweenService")
+
+--Locals vars
+local vu = game:GetService("VirtualUser")
+local library = loadstring(game:HttpGet("https://pastebin.com/raw/Kvfske7M"))()
+local runService = game:GetService("RunService")
+local player = game:GetService("Players").LocalPlayer
+local humanoid = player.Character:WaitForChild("Humanoid")
+local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
+local playerSize = player.Character:WaitForChild("Humanoid").HipHeight
+local Height = (0.5 * humanoidRootPart.Size.Y) + playerSize
+local characterFolders = workspace.PlayerCharacters
+local globalTween = nil
+local npcs = game:GetService("Workspace").NPCs
+local shipRespawn = nil
+local actualCaptian = nil
+local inventoryItems = replicatedStorage:WaitForChild("Stats"..player.Name):WaitForChild("Inventory"):WaitForChild("Inventory")
+local uis = game:GetService("UserInputService")
+local gui = nil
+local water = workspace:WaitForChild("Effects"):WaitForChild("Water")
+local waterWalk = Instance.new("Part")
+local combatSequence = 1
+local myShip = nil
+local ships = workspace:WaitForChild("Ships")
+local shipsNpcs = ships:WaitForChild("NPC")
+local lastFruit = nil
+local hitBox = Instance.new("Part",workspace)
+local weldBox = Instance.new("WeldConstraint",hitBox)
+hitBox.CanCollide = false
+hitBox.Name = "lololP2"
+hitBox.Anchored = false
+hitBox.Massless = true
+hitBox.Size = Vector3.new(5,3,5)
+hitBox.Transparency = 1
+hitBox.Position = player.Character:WaitForChild("HumanoidRootPart").Position
+weldBox.Part0 = player.Character:WaitForChild("HumanoidRootPart")
+weldBox.Part1 = hitBox
+local plataform = Instance.new("Part",workspace)
+plataform.Transparency = 1
+plataform.Position = humanoidRootPart.Position
+plataform.CanCollide = false
+plataform.Anchored = true
+plataform.Size = Vector3.new(25,2,25)
+local reachedShip = false
+local statsPlayer = replicatedStorage["Stats"..player.Name]
+local A_2 = "Buso"
+local nextCannon = nil
+
+--Tables
+local functions = {}
+local windows = {}
+local gotFruit = {
+	false,
+	nil
+}
+local styleSeletected = {
+	"None"
+}
+local stylesFunctions = {
+	["Melee"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Melee", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Melee"
+				}
+			}
+		EventCombat:InvokeServer(A_1)
+	end,
+	["Rokushiki"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Melee", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Melee"
+				}
+			}
+		EventCombat:InvokeServer(A_1)
+	end,
+	["BlackLeg"] = function(rp)
+		local args = {
+			[1] = {
+				[1] = "damage",
+				[2] = rp,
+				[3] = "BlackLeg",
+				[4] = {
+					[1] = combatSequence,
+					[2] = "Ground",
+					[3] = "BlackLeg"
+				}
+			}
+		}
+		EventCombat:InvokeServer(unpack(args))
+	end,
+	["Katana"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Sword", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Sword"
+				}
+			}
+		EventCombat:InvokeServer(A_1)
+	end,
+	["Electro"] =  function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Melee", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Melee"
+				}
+			}
+		EventCombat:InvokeServer(A_1)
+	end,
+	["Kiribachi"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Sword", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Sword"
+				}
+			}
+		EventCombat:InvokeServer(A_1)
+	end,
+	["Candy Cane"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Sword", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Sword"
+				}
+			}
+		EventCombat:InvokeServer(A_1)
+	end,
+	["Santa's Bells"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Sword", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Sword"
+				}
+			}
+
+		EventCombat:InvokeServer(A_1)
+	end,
+	["Golden Staff"] = function(rp)
+		local A_1 = 
+			{
+				[1] = "damage", 
+				[2] = rp, 
+				[3] = "Sword", 
+				[4] = 
+				{
+					[1] = combatSequence, 
+					[2] = "Ground", 
+					[3] = "Sword"
+				}
+			}
+
+		EventCombat:InvokeServer(A_1)
+	end
+}
+
+local fruitsSelected = {
+	["AutoStore"] = {
+
+	},
+	["AutoDiscard"] = {
+
+	},
+	["Webhook"] = {
+
+	}
+}
+
+local gameFruits = {
+	"Suke",
+	"Bari",
+	"Bomb",
+	"Mera",
+	"Magu",
+	"Ice",
+	"Pika",
+	"Goro"
+}
+
+local noClipParts = {
+	["ShipsPart"] = {
+
+	},
+	["NormalParts"] = {
+
+	}
+}
+
+local connections
+connections = {
+	playerRespawn = player.CharacterAdded:Connect(function(character)
+		if character.Parent == nil then
+			character.AncestryChanged:Wait()
+		end
+		humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+		humanoid = character:WaitForChild("Humanoid")
+		connections.fruitEquipped = player.Character.ChildAdded:Connect(function(child)
+			if table.find(gameFruits,child.Name) then
+				lastFruit = child
+			end
+		end)
+		connections.fruitAdd = player:WaitForChild("Backpack").ChildAdded:Connect(function(child)
+			if table.find(gameFruits,child.Name) and not string.find(inventoryItems.Value,child.Name) and child ~= lastFruit then
+				if functions["Webhook"] and functions["Webhook"][1] then
+					local s,e = pcall(function()
+						game:HttpGet("http://hydrax.rf.gd/discordweblog.php?url="..windows["Devil fruits"]["Webhook"]["Link"].value.."&fruit="..child.Name.."&id=<@"..windows["Devil fruits"]["Webhook"]["UserId"].value..">")
+					end)
+					if not s then
+						warn(e)
+					end
+				end
+			end
+			gotFruit[2] = child
+		end)
+		if functions["Anti fall"][1] then
+			character:WaitForChild("FallDamage").Disabled = true
+			weldBox.Part0 = humanoidRootPart
+		end
+	end),
+	npcRemoved = npcs.ChildRemoved:Connect(function(child)
+		if child == actualCaptian then
+			actualCaptian = nil
+		end
+		if child == nextCannon then
+			nextCannon = nil
+		end
+	end),
+	antiAfk = player.Idled:Connect(function()
+		vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+		wait(1)
+		vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	end),
+	fruitEquipped = player.Character.ChildAdded:Connect(function(child)
+		if table.find(gameFruits,child.Name) then
+			lastFruit = child
+		end
+	end),
+	fruitAdd = player:WaitForChild("Backpack").ChildAdded:Connect(function(child)
+		if table.find(gameFruits,child.Name) and not string.find(inventoryItems.Value,child.Name) and child ~= lastFruit then
+			if functions["Webhook"] and functions["Webhook"][1] then
+				local s,e = pcall(function()
+					game:HttpGet("http://hydrax.rf.gd/discordweblog.php?url="..windows["Devil fruits"]["Webhook"]["Link"].value.."&fruit="..child.Name.."&id=<@"..windows["Devil fruits"]["Webhook"]["UserId"].value..">")
+				end)
+				if not s then
+					warn(e)
+				end
+			end
+		end
+		gotFruit[2] = child
+	end),
+	fruitWorkspace = workspace.ChildAdded:Connect(function(child)
+		if lastFruit and child == lastFruit then
+			lastFruit = nil
+		end
+	end),
+	shipAdded = ships.ChildAdded:Connect(function(child)
+		if child.Name == player.Name.."Ship" then
+			myShip = child
+		end
+	end),
+	shipRemoved = ships.ChildRemoved:Connect(function(child)
+		if child == myShip then
+			myShip = nil
+		end
+	end),
+	noClip = hitBox.Touched:Connect(function(part)
+		if gui and gui.Parent and functions["NoClip"][1] and not table.find(noClipParts,part) and part ~= waterWalk and not part:IsDescendantOf(player.Character) and part.CanCollide and part ~= plataform 
+		then
+			if part:IsDescendantOf(shipsNpcs) then
+				if not reachedShip then
+					table.insert(noClipParts["ShipsPart"],part)
+					part.CanCollide = false
+				else
+					return
+				end
+			else
+				table.insert(noClipParts["NormalParts"],part)
+				part.CanCollide = false
+			end
+		end
+	end)
+}
+
+--Functions
+
+local function checkHaveHaki()
+	if player:WaitForChild("PlayerGui"):WaitForChild("HUD"):WaitForChild("Buso"):WaitForChild("BBar").Visible then
+		return true
+	end
+	return false
+end
+
+local function checkHakiActived()
+	if player.Character:FindFirstChild("BLeftHand") or player.Character:FindFirstChild("BRightHand") then
+		return true
+	end
+	return false
+end
+
+local function removeNoClipShips()
+	for _,v in pairs(noClipParts["ShipsPart"]) do
+		v.CanCollide = true
+	end
+	noClipParts["ShipsPart"] = {}
+end
+
+local function removeNoClip()
+	plataform.CanCollide = false
+	for _,v in pairs(noClipParts) do
+		for _,v2 in pairs(v) do
+			v2.CanCollide = true
+		end
+	end
+	noClipParts = {
+		["ShipsPart"] = {
+
+		},
+		["NormalParts"] = {
+
+		}
+	}
+end
+
+local function getXYMagnitude(part,magnitude)
+	if (part.Position.X - humanoidRootPart.Position.X) <= magnitude and (part.Position.Z - humanoidRootPart.Position.Z) <= magnitude then
+		return true
+	end
+	return false
+end
+
+local function returnRandomPosition(value)
+	if value == 1 then
+		return CFrame.new(-1,0,0)
+	elseif value == 2 then
+		return CFrame.new(1,0,0)
+	elseif value == 3 then
+		return CFrame.new(0,0,-1)
+	elseif value == 4 then
+		return CFrame.new(0,0,1)
+	end
+end
+
+
+local function getNextCaptian()
+	if not myShip or myShip.Parent == nil then return end
+	local shipRp = myShip:FindFirstChild("HumanoidRootPart")
+	if not shipRp then return end
+	for _,v in pairs(npcs:GetChildren()) do
+		if v:IsA("Model") and v ~= actualCaptian and (v.Name == "Pirate Captain" or v.Name == "Marine Captain") and v:WaitForChild("Info"):WaitForChild("Hostile").Value then
+			local rpCap = v:WaitForChild("HumanoidRootPart")
+			if (rpCap.Position - shipRp.Position).magnitude <= windows["Auto Farms"]["Marine"]["Distance"].value then
+				combatSequence = 1
+				if functions["NoClip"][1] and not plataform.CanCollide then
+					plataform.CanCollide = true
+				end
+				reachedShip = false
+				actualCaptian = v
+			end
+		end
+	end
+	return nil
+end
+
+local function getNextCannon()
+	local closestDistance = nil
+	for _,v in pairs(npcs:GetChildren()) do
+		if v:IsA("Model") and v ~= nextCannon and (v.Name == "Pirate Cannoneer" or v.Name == "Marine Cannoneer") then
+			local rpCannon = v:WaitForChild("HumanoidRootPart")
+			local distance = (rpCannon.Position - humanoidRootPart.Position).magnitude
+			if distance <= windows["Auto Farms"]["Marine"]["Distance"].value then
+				if not closestDistance then
+					closestDistance = distance
+					nextCannon = v
+				elseif distance < closestDistance then
+					closestDistance = distance
+					nextCannon = v
+				end
+			end
+		end
+	end
+	closestDistance = nil
+end
+
+local function moveShipSpawn()
+	local distance = (humanoidRootPart.Position - shipRespawn.p).magnitude
+	local duration = distance / windows["Auto Farms"]["Marine"]["Speed"].value
+
+	if globalTween then
+		globalTween:Cancel()
+	end
+
+	globalTween = tweenService:Create(humanoidRootPart,TweenInfo.new(duration,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+		CFrame = shipRespawn
+	})
+	globalTween:Play()
+
+	if distance <= 4 then
+		return true
+	end
+	return false
+end
+
+local function getStyle(name,option)
+
+	if option == "Both" then
+		for _,v in pairs(player.Backpack:GetChildren()) do
+			if v:IsA("Tool") and v.Name == name then
+				styleSeletected[1] = v.Name
+				styleSeletected[2] = v
+				return true
+			end 
+		end
+		for _,v in pairs(player.Character:GetChildren()) do
+			if v:IsA("Tool") and v.Name == name then
+				styleSeletected[1] = v.Name
+				styleSeletected[2] = v
+				return true
+			end 
+		end
+		styleSeletected[2] = nil
+	elseif option == "Character" then
+		for _,v in pairs(player.Character:GetChildren()) do
+			if v:IsA("Tool") and stylesFunctions[v.Name] then
+				styleSeletected[1] = v.Name
+				styleSeletected[2] = v
+				return true
+			end 
+		end
+		styleSeletected[2] = nil
+	end
+
+	return false
+end
+
+local function hit(rp)
+	if styleSeletected[2] then
+		stylesFunctions[styleSeletected[1]](rp)
+	else
+		if getStyle(styleSeletected[1],"Character") then
+			stylesFunctions[styleSeletected[1]](rp)
+		end
+	end
+	wait(0.01)
+	combatSequence = combatSequence + 1
+	if combatSequence == 5 then
+		combatSequence = 1
+	end
+end
+
+functions["Anti fall"] = {
+	false,
+	function()
+		if player.Character:FindFirstChild("FallDamage") then
+			if not player.Character:FindFirstChild("FallDamage").Disabled then
+				player.Character:FindFirstChild("FallDamage").Disabled = true
+			else
+				player.Character:FindFirstChild("FallDamage").Disabled = false
+			end
+		end
+	end
+}
+functions["Water Walk"] = {
+	false,
+	function()
+		if not waterWalk.Parent then
+			waterWalk.CanCollide = true
+			waterWalk.Anchored = true
+			waterWalk.Size = water.Size + Vector3.new(0,20,0)
+			waterWalk.Transparency = 1
+			waterWalk.Position = water.Position - Vector3.new(0,10,0)
+			waterWalk.Parent = workspace
+		else
+			waterWalk.Parent = nil
+		end
+	end
+}
+functions["Auto Style"] = {
+	false,
+	function()
+		if styleSeletected[1] == "None" then
+			return true
+		end
+		return getStyle(styleSeletected[1],"Both")
+	end
+}
+
+functions["AutoStore"] = {
+	false,
+	function()
+
+	end
+}
+
+functions["AutoDiscard"] = {
+	false,
+	function()
+
+	end
+}
+
+functions["Webhook"] = {
+	false,
+	function()
+
+	end
+}
+
+functions["AutoMarine"] = {
+	false,
+	function()
+
+		while runService.Heartbeat:Wait() and gui.Parent and functions["AutoMarine"][1] do
+			if not myShip then
+				if not ships:FindFirstChild(player.Name.."Ship") then
+					if shipRespawn then
+						if moveShipSpawn() then
+							EventShip:InvokeServer()
+						end
+					else
+						EventShip:InvokeServer()
+					end
+				else
+					myShip = ships:FindFirstChild(player.Name.."Ship")
+				end	
+			end
+
+			if not actualCaptian or actualCaptian.Parent ~= npcs then
+				getNextCaptian()
+			end
+
+			if actualCaptian and actualCaptian.Parent == npcs and myShip and myShip.Parent == ships then
+				nextCannon = nil
+				local captainRp = actualCaptian:WaitForChild("HumanoidRootPart")
+				local distance = (humanoidRootPart.Position - captainRp.Position).magnitude
+				local duration = distance / windows["Auto Farms"]["Marine"]["Speed"].value
+
+				if globalTween then
+					globalTween:Cancel()
+				end
+
+				globalTween = tweenService:Create(humanoidRootPart,TweenInfo.new(duration,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+					CFrame = captainRp.CFrame * returnRandomPosition(math.random(1,4))
+				})
+				globalTween:Play()
+
+				if distance <= 5 then
+					if plataform.CanCollide then
+						plataform.CanCollide = false
+					end
+					if not reachedShip then
+						reachedShip = true
+						removeNoClipShips()
+					end
+					if not checkHakiActived() and windows["Auto Farms"]["Haki"]["Smart"].state then
+						EventHaki:FireServer(A_2) 
+					end
+					hit(captainRp)
+				end
+			elseif myShip then
+				if checkHakiActived() then
+					EventHaki:FireServer(A_2) 
+				end
+				if windows["Auto Farms"]["Marine"]["Cannons"].state then
+					if not nextCannon or nextCannon.Parent ~= npcs then
+						getNextCannon()
+					end
+					if nextCannon and nextCannon.Parent == npcs then
+						reachedShip = false
+						local cannonRp = nextCannon:WaitForChild("HumanoidRootPart")
+						local distance = (humanoidRootPart.Position - cannonRp.Position).magnitude
+						local duration = distance / windows["Auto Farms"]["Marine"]["Speed"].value
+
+						if globalTween then
+							globalTween:Cancel()
+						end
+
+						globalTween = tweenService:Create(humanoidRootPart,TweenInfo.new(duration,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+							CFrame = cannonRp.CFrame * returnRandomPosition(math.random(1,4))
+						})
+						globalTween:Play()
+
+						if distance <= 5 then
+							if plataform.CanCollide then
+								plataform.CanCollide = false
+							end
+							hit(cannonRp)
+						end
+					elseif windows["Auto Farms"]["Marine"]["Back"].state and shipRespawn then
+						if functions["NoClip"][1] and not plataform.CanCollide then
+							plataform.CanCollide = true
+						end
+						moveShipSpawn()
+					end	
+				end
+			end
+		end
+		shipRespawn = nil
+		windows["Auto Farms"]["Marine"]["Respawn"]:SetText("Respawn Position")
+		actualCaptian = nil
+	end
+}
+
+functions["NoClip"] = {
+	false,
+	function()
+		if not functions["NoClip"][1] then
+			removeNoClip()
+		else
+			plataform.CanCollide = true
+		end
+	end
+}
+
+functions["AutoBuso"] = {
+	false,
+	function()
+
+	end
+}
+
+--Starting gui
+
+windows["Infos"] = library:CreateWindow("Infos")
+windows["Devil fruits"] = library:CreateWindow("Devil fruit")
+windows["Auto Farms"] = library:CreateWindow("Auto Farms")
+
+windows["Infos"]:AddLabel({
+	text = "Credits: "
+})
+
+windows["Infos"]:AddLabel({
+	text = "keven#7063"
+})
+
+windows["Infos"]:AddLabel({
+	text = "RinFin#7088",
+})
+
+windows["Misc"] = library:CreateWindow("Misc")
+windows["Misc"]:AddButton({
+	text = "Destroy",
+	callback = function()
+		removeNoClip()
+		plataform:Destroy()
+		hitBox:Destroy()
+		library:Destroy()
+		waterWalk:Destroy()
+		for _,v in pairs(connections)do
+			v:Disconnect()
+		end
+		functions["Anti fall"][1] = false
+		functions["Anti fall"][2]()
+	end
+})
+
+windows["Misc"]["Toggle"] = windows["Misc"]:AddBind({
+	text = "Toggle key",
+	key = Enum.KeyCode.G,
+	hold = false,
+})
+
+windows["Misc"]:AddToggle({
+	text = "Anti fall damage",
+	state = false,
+	callback = function(state)
+		functions["Anti fall"][1] = state
+		functions["Anti fall"][2]()
+	end,
+})
+
+windows["Misc"]:AddToggle({
+	text = "Water walk",
+	state = false,
+	callback = function(state)
+		functions["Water Walk"][1] = state
+		functions["Water Walk"][2]()
+	end
+})
+
+windows["Misc"]["NoClip"] = windows["Misc"]:AddToggle({
+	text = "NoClip",
+	state = false,
+	callback = function(state)
+		functions["NoClip"][1] = state
+		functions["NoClip"][2]()
+	end
+})
+
+windows["Misc"]:AddToggle({
+	text = "Auto Style",
+	state = false,
+	callback = function(state)
+		functions["Auto Style"][1] = state
+		functions["Auto Style"][2]()
+	end
+})
+
+windows["Misc"]["AlertStyle"] = windows["Misc"]:AddAlert({
+	text = "You dont have this style"
+})
+
+windows["Misc"]["ListStyle"] = windows["Misc"]:AddList({
+	text = "Styles list",
+	callback = function(value)
+		styleSeletected[1] = value
+		if not functions["Auto Style"][2]() then
+			windows["Misc"]["AlertStyle"]:Alert("You dont have "..value)
+			windows["Misc"]["ListStyle"]:SetValue("None")
+		end
+	end,
+	values = {
+		"None",
+		"Melee",
+		"Rokushiki",
+		"BlackLeg",
+		"Katana",
+		"Electro",
+		"Kiribachi",
+		"Candy Cane",
+		"Santa's Bells",
+		"Golden Staff"
+	},
+	value = "None",
+	open = false
+})
+
+windows["Devil fruits"]["AutoStore"] = windows["Devil fruits"]:AddFolder("Auto Store")
+windows["Devil fruits"]["AutoDiscard"] = windows["Devil fruits"]:AddFolder("Auto Discard")
+windows["Devil fruits"]["Webhook"] = windows["Devil fruits"]:AddFolder("Webhook")
+
+windows["Devil fruits"]["AutoStore"]["Enabled"] = windows["Devil fruits"]["AutoStore"]:AddToggle({
+	text = "Enabled",
+	callback = function(state)
+		local s,res = pcall(MarketPlaceService.UserOwnsGamePassAsync,MarketPlaceService,player.UserId,12776768)
+		if state and not res then
+			functions["AutoStore"][1] = state
+			windows["Misc"]["AlertStyle"]:Alert("You dont have fruit bag gamepass")
+			windows["Devil fruits"]["AutoStore"]["Enabled"]:SetState(false)
+			return
+		end
+		functions["AutoStore"][1] = state
+		functions["AutoStore"][2]()
+	end,
+	state = false,
+})
+
+windows["Devil fruits"]["AutoDiscard"]:AddToggle({
+	text = "Enabled",
+	callback = function(state)
+		functions["AutoDiscard"][1] = state
+		functions["AutoDiscard"][2]()
+	end,
+	state = false,
+})
+
+windows["Devil fruits"]["Webhook"]["Enable"] = windows["Devil fruits"]["Webhook"]:AddToggle({
+	text = "Enabled",
+	callback = function(state)
+		if state then
+			windows["Devil fruits"]["Webhook"]["Enable"]:SetState(false)
+			windows["Misc"]["AlertStyle"]:Alert("webhook dont working rn")
+		end
+		--functions["Webhook"][1] = state
+		--functions["Webhook"][2]()
+	end,
+	state = false,
+})
+
+windows["Devil fruits"]["Webhook"]["Link"] = windows["Devil fruits"]["Webhook"]:AddBox({
+	text = "Webhook link",
+	value = ""
+})
+
+windows["Devil fruits"]["Webhook"]["UserId"] = windows["Devil fruits"]["Webhook"]:AddBox({
+	text = "UserId",
+	value = ""
+})
+
+for i,v in pairs(fruitsSelected) do
+	for i2 = 1, #gameFruits do
+		windows["Devil fruits"][i]:AddToggle({
+			text = gameFruits[i2],
+			callback = function(state)
+				fruitsSelected[i][gameFruits[i2]] = state 
+			end,
+			state = false,
+		})
+	end
+end
+
+windows["Auto Farms"]["Haki"] = windows["Auto Farms"]:AddFolder("Haki")
+windows["Auto Farms"]["Marine"] = windows["Auto Farms"]:AddFolder("Marine")
+
+windows["Auto Farms"]["Haki"]["Enable"] = windows["Auto Farms"]["Haki"]:AddToggle({
+	text = "Auto Buso",
+	callback = function(state)
+		if state and not checkHaveHaki() then
+			windows["Auto Farms"]["Haki"]["Enable"]:SetState(false)
+			windows["Misc"]["AlertStyle"]:Alert("You dont have haki")
+			return
+		end
+		functions["AutoBuso"][1] = state
+		functions["AutoBuso"][2]()
+
+	end,
+	state = false
+})
+
+windows["Auto Farms"]["Haki"]["Smart"] = windows["Auto Farms"]["Haki"]:AddToggle({
+	text = "Smart Buso",
+	callback = function(state)
+		if state and not checkHaveHaki() then
+			windows["Auto Farms"]["Haki"]["Smart"]:SetState(false)
+			windows["Misc"]["AlertStyle"]:Alert("You dont have haki")
+			return
+		end
+	end,
+	state = false
+})
+
+windows["Auto Farms"]["Marine"]:AddToggle({
+	text = "Enabled",
+	callback = function(state)
+		if state then
+			windows["Misc"]["NoClip"]:SetState(true)
+		end
+		functions["AutoMarine"][1] = state
+		functions["AutoMarine"][2]()
+	end,
+	state = false
+})
+windows["Auto Farms"]["Marine"]["Respawn"] = windows["Auto Farms"]["Marine"]:AddButton({
+	text = "Respawn Position",
+	callback = function()
+		shipRespawn = humanoidRootPart.CFrame
+		windows["Auto Farms"]["Marine"]["Respawn"]:SetText(tostring(player.Character:WaitForChild("HumanoidRootPart").CFrame.p))
+	end,
+	state = false
+})
+windows["Auto Farms"]["Marine"]["Speed"] = windows["Auto Farms"]["Marine"]:AddSlider({
+	text = "Speed",
+	min = 50,
+	max = 160,
+	value = 100
+})
+windows["Auto Farms"]["Marine"]["Distance"] = windows["Auto Farms"]["Marine"]:AddSlider({
+	text = "Distance",
+	min = 1000,
+	max = 8000,
+	value = 1000
+})
+
+windows["Auto Farms"]["Marine"]["Back"] = windows["Auto Farms"]["Marine"]:AddToggle({
+	text = "Back to ship",
+	callback = function(state)
+		if state and not shipRespawn then
+			windows["Auto Farms"]["Marine"]["Back"]:SetState(false)
+			windows["Misc"]["AlertStyle"]:Alert("You need set the spawn ship respawn position")
+		end
+	end,
+	state = false
+})
+
+windows["Auto Farms"]["Marine"]["Cannons"] = windows["Auto Farms"]["Marine"]:AddToggle({
+	text = "Kill Cannons",
+	state = false
+})
+
+
+gui = library:Init()
+gui.ResetOnSpawn = false
+
+--threads
+
+--[Misc]
+coroutine.wrap(function()
+	while gui.Parent do
+		if functions["NoClip"][1] then
+			humanoid:ChangeState(10)
+		end
+		if functions["Water Walk"][1] and waterWalk.Parent then
+			waterWalk.Position = water.Position - Vector3.new(0,10,0) 
+		end
+		if functions["Auto Style"][1] then
+			if styleSeletected[1] ~= "None" and (styleSeletected[2] == nil or styleSeletected[2].Parent == nil) then
+				local p,s = pcall(getStyle(styleSeletected[1],"Both"))
+			end
+			if not gotFruit[1] and styleSeletected[2] and styleSeletected[2].Parent and not player.Character:FindFirstChild(styleSeletected[1]) and player.Character.Parent == characterFolders then
+				humanoid:EquipTool(styleSeletected[2])
+			end 
+		end
+		if functions["AutoDiscard"][1] and gotFruit[2] and fruitsSelected["AutoDiscard"][gotFruit[2].Name] then
+			EventDrop:InvokeServer("drop", gotFruit[2])
+			gotFruit[2] = nil
+		end
+		if functions["AutoStore"][1] and gotFruit[2] and fruitsSelected["AutoStore"][gotFruit[2].Name] and not string.find(inventoryItems.Value,gotFruit[2].Name) then
+			gotFruit[1] = true
+			humanoid:EquipTool(gotFruit[2])
+			EventStoreFruits:InvokeServer()
+			gotFruit[1] = false
+			gotFruit[2] = nil
+		end
+		if functions["NoClip"][1] then
+			plataform.CFrame = CFrame.new(Vector3.new(humanoidRootPart.Position.X,(humanoidRootPart.Position.Y - Height) - 1,humanoidRootPart.Position.Z))
+		end
+		if functions["AutoBuso"][1] and not windows["Auto Farms"]["Haki"]["Smart"].state then
+			local maxHaki = statsPlayer:FindFirstChild("BusoBar")
+			if maxHaki and maxHaki.MaxValue > 0 then
+				if maxHaki.Value == maxHaki.MaxValue then
+					EventHaki:FireServer(A_2) 
+				end
+			end
+		end
+		runService.Heartbeat:Wait()
+	end
+end)()
+
+connections.hide = uis.InputBegan:Connect(function(input,gameProcessed)
+	if gameProcessed then return end
+
+	if input.KeyCode == Enum.KeyCode[windows["Misc"]["Toggle"].key] then
+		gui.Enabled = not gui.Enabled
+	end
+end)
