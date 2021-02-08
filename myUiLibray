@@ -29,7 +29,9 @@ function libray:Create(class,properties)
 	return instance
 end
 
-function libray:CreateDefault(name)
+function libray:CreateDefault(name,parent)
+	print("creating lol ?")
+	
 	local frame = self:Create("Frame",{
 		Name = "Main",
 		BackgroundColor3 = Color3.new(0,0,0),
@@ -37,7 +39,7 @@ function libray:CreateDefault(name)
 		BorserSizePixel = 1,
 		Size = UDim2.new(0.194,0,1,0),
 		Position = UDim2.new(0,0,0,0),
-		Parent = self.base
+		Parent = parent
 	})
 	
 	local button = self:Create("TextButton",{
@@ -86,7 +88,7 @@ function libray:Init(name)
 
 	self.base.Parent = game:GetService"CoreGui"
 	
-	libray:CreateDefault(name)
+	libray:CreateDefault(name,self.base)
 end
 
 return libray
