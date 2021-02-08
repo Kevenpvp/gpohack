@@ -85,6 +85,8 @@ function libray:Init(name)
 
 
 	self.base.Parent = game:GetService"CoreGui"
+	
+	libray:CreateDefault(name)
 end
 
 return libray
