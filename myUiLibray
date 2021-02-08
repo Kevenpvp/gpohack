@@ -29,7 +29,7 @@ function libray:Create(class,properties)
 	return instance
 end
 
-function libray:CreateDefault(name,parent)
+function libray:CreateDefault(name)
 	print("creating lol ?")
 	
 	local frame = self:Create("Frame",{
@@ -39,7 +39,7 @@ function libray:CreateDefault(name,parent)
 		BorserSizePixel = 1,
 		Size = UDim2.new(0.194,0,1,0),
 		Position = UDim2.new(0,0,0,0),
-		Parent = parent
+		Parent = self.base
 	})
 	
 	local button = self:Create("TextButton",{
@@ -88,7 +88,45 @@ function libray:Init(name)
 
 	self.base.Parent = game:GetService"CoreGui"
 	
-	libray:CreateDefault(name,self.base)
+	print("creating lol ?")
+
+	local frame = self:Create("Frame",{
+		Name = "Main",
+		BackgroundColor3 = Color3.new(0,0,0),
+		BorderColor3 = Color3.new(255,255,255),
+		BorserSizePixel = 1,
+		Size = UDim2.new(0.194,0,1,0),
+		Position = UDim2.new(0,0,0,0),
+		Parent = self.base
+	})
+
+	local button = self:Create("TextButton",{
+		Name = "Open",
+		Text = ">",
+		BackgroundColor3 = Color3.new(0,0,0),
+		BorserSizePixel = 0,
+		Size = UDim2.new(0.238,0,0.06,0),
+		AnchorPoint = Vector2.new(0,0.5),
+		Position = UDim2.new(1,0,0.5,0),
+		TextColor3 = Color3.new(255,255,255),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		Parent = frame
+	})
+
+	local label = self:Create("TextLabel",{
+		Name = "Title",
+		Text = name or "nill",
+		BackgroundColor3 = Color3.new(0,0,0),
+		BorderColor3 = Color3.new(255,255,255),
+		BorserSizePixel = 1,
+		Size = UDim2.new(0.944,0,0.084,0),
+		Position = UDim2.new(0.028,0,0.013,0),
+		TextColor3 = Color3.new(255,255,255),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		Parent = frame
+	})
 end
 
 return libray
