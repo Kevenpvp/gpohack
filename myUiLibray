@@ -37,7 +37,7 @@ function libray:CreateDefault(name)
 		BorserSizePixel = 1,
 		Size = UDim2.new(0.194,0,1,0),
 		Position = UDim2.new(0,0,0,0),
-		Parent = self.Base
+		Parent = self.base
 	})
 	
 	local button = self:Create("TextButton",{
