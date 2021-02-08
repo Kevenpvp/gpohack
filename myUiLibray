@@ -77,6 +77,8 @@ function libray:Init(name)
 	self.base = self.base or self:Create("ScreenGui")
 	self.base.Name = getRandomString(10,true)
 	
+	print("MAN ARE YOU OKAY?")
+	
 	--[[
 	if syn and syn.protect_gui then
 		syn.protect_gui(self.base)
