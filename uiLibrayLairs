@@ -1,4 +1,4 @@
-local libray = {windows = {}, open = true}
+local libray = {gui = nil, windows = {}, open = true}
 
 local random = Random.new()
 local letters = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'}
@@ -31,8 +31,8 @@ end
 
 function libray:CreateDefault(name)
 
-        print("hmm?")
-  
+	print("hmm?")
+
 	local frame = libray:Create("Frame",{
 		Name = "Main",
 		Size = UDim2.new(0.54,0,0.454,0),
@@ -41,16 +41,16 @@ function libray:CreateDefault(name)
 		BackgroundColor3 = Color3.fromRGB(24,24,24),
 		BackgroundTransparency = 0,
 		BorderSizePixel = 0,
-		Parent = self.Base
+		Parent = libray.gui
 	})
-	
+
 	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
 		AspectRatio = 1.768,
 		AspectType = Enum.AspectType.FitWithinMaxSize,
 		DominantAxis = Enum.DominantAxis.Width,
 		Parent = frame
 	})
-	
+
 	local frame2 = libray:Create("Frame",{
 		Name = "Black Backround",
 		Size = UDim2.new(1,0,0.87,0),
@@ -61,14 +61,14 @@ function libray:CreateDefault(name)
 		BorderSizePixel = 0,
 		Parent = frame
 	})
-	
+
 	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
 		AspectRatio = 2.032,
 		AspectType = Enum.AspectType.FitWithinMaxSize,
 		DominantAxis = Enum.DominantAxis.Width,
 		Parent = frame2
 	})
-	
+
 	local frame3 = libray:Create("Frame",{
 		Name = "TopHeader",
 		Size = UDim2.new(1,0,0.127,0),
@@ -79,14 +79,14 @@ function libray:CreateDefault(name)
 		BorderSizePixel = 0,
 		Parent = frame
 	})
-	
+
 	local uiaspectratioconstraint3 = libray:Create("UIAspectRatioConstraint",{
 		AspectRatio = 13.897,
 		AspectType = Enum.AspectType.FitWithinMaxSize,
 		DominantAxis = Enum.DominantAxis.Width,
 		Parent = frame3
 	})
-	
+
 	local frame4 = libray:Create("Frame",{
 		Name = "Gradient Backround",
 		Size = UDim2.new(1,0,1,0),
@@ -97,26 +97,26 @@ function libray:CreateDefault(name)
 		BorderSizePixel = 0,
 		Parent = frame
 	})
-	
+
 	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
 		AspectRatio = 1.768,
 		AspectType = Enum.AspectType.FitWithinMaxSize,
 		DominantAxis = Enum.DominantAxis.Width,
 		Parent = frame4
 	})
-	
+
 	local uigradient = libray:Create("UIGradient",{
 		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
 		Parent = frame4
 	})
-	
+
 end
 
 function libray:Init(name)
-	
+
 	self.base = self.base or self:Create("ScreenGui")
 	self.base.Name = getRandomString(10,true)
-	
+
 	--[[
 	if syn and syn.protect_gui then
 		syn.protect_gui(self.base)
@@ -127,9 +127,10 @@ function libray:Init(name)
 
 
 	self.base.Parent = game:GetService"CoreGui"
+	libray.gui = self.base
 	
 	print("Lets go")
-	
+
 	libray:CreateDefault(name)
 end
 
