@@ -30,44 +30,81 @@ function libray:Create(class,properties)
 end
 
 function libray:CreateDefault(name)
-	print("creating lol ?")
-	
 	local frame = self:Create("Frame",{
 		Name = "Main",
-		BackgroundColor3 = Color3.new(0,0,0),
-		BorderColor3 = Color3.new(255,255,255),
-		BorderSizePixel = 1,
-		Size = UDim2.new(0.194,0,1,0),
-		Position = UDim2.new(0,0,0,0),
-		Parent = self.base
-	})
-	
-	local button = self:Create("TextButton",{
-		Name = "Open",
-		Text = ">",
-		BackgroundColor3 = Color3.new(0,0,0),
+		Size = UDim2.new(0.54,0,0.454,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 0,
 		BorderSizePixel = 0,
-		Size = UDim2.new(0.238,0,0.06,0),
-		AnchorPoint = Vector2.new(0,0.5),
-		Position = UDim2.new(1,0,0.5,0),
-		TextColor3 = Color3.new(255,255,255),
-		Font = Enum.Font.GothamBold,
-		TextScaled = true,
+		Parent = self.Base
+	})
+	
+	local uiaspectratioconstraint = self:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.768,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Width,
 		Parent = frame
 	})
 	
-	local label = self:Create("TextLabel",{
-		Name = "Title",
-		Text = name or "nill",
-		BackgroundColor3 = Color3.new(0,0,0),
-		BorderColor3 = Color3.new(255,255,255),
-		BorderSizePixel = 1,
-		Size = UDim2.new(0.944,0,0.084,0),
-		Position = UDim2.new(0.028,0,0.013,0),
-		TextColor3 = Color3.new(255,255,255),
-		Font = Enum.Font.GothamBold,
-		TextScaled = true,
+	local frame2 = self:Create("Frame",{
+		Name = "Black Backround",
+		Size = UDim2.new(1,0,0.87,0),
+		AnchorPoint = Vector2.new(0.5,1),
+		Position = UDim2.new(0.5,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
 		Parent = frame
+	})
+	
+	local uiaspectratioconstraint2 = self:Create("UIAspectRatioConstraint",{
+		AspectRatio = 2.032,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = frame2
+	})
+	
+	local frame3 = self:Create("Frame",{
+		Name = "TopHeader",
+		Size = UDim2.new(1,0,0.127,0),
+		AnchorPoint = Vector2.new(0,0),
+		Position = UDim2.new(0,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Parent = frame
+	})
+	
+	local uiaspectratioconstraint3 = self:Create("UIAspectRatioConstraint",{
+		AspectRatio = 13.897,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = frame3
+	})
+	
+	local frame4 = self:Create("Frame",{
+		Name = "Gradient Backround",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.47,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+		Parent = frame
+	})
+	
+	local uiaspectratioconstraint4 = self:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.768,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = frame4
+	})
+	
+	local uigradient = self:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = frame4
 	})
 	
 end
@@ -76,8 +113,6 @@ function libray:Init(name)
 	
 	self.base = self.base or self:Create("ScreenGui")
 	self.base.Name = getRandomString(10,true)
-	
-	print("MAN ARE YOU OKAY?")
 	
 	--[[
 	if syn and syn.protect_gui then
@@ -90,45 +125,7 @@ function libray:Init(name)
 
 	self.base.Parent = game:GetService"CoreGui"
 	
-	print("creating lol ?")
-
-	local frame = self:Create("Frame",{
-		Name = "Main",
-		BackgroundColor3 = Color3.new(0,0,0),
-		BorderColor3 = Color3.new(255,255,255),
-		BorderSizePixel = 1,
-		Size = UDim2.new(0.194,0,1,0),
-		Position = UDim2.new(0,0,0,0),
-		Parent = self.base
-	})
-
-	local button = self:Create("TextButton",{
-		Name = "Open",
-		Text = ">",
-		BackgroundColor3 = Color3.new(0,0,0),
-		BorderSizePixel = 0,
-		Size = UDim2.new(0.238,0,0.06,0),
-		AnchorPoint = Vector2.new(0,0.5),
-		Position = UDim2.new(1,0,0.5,0),
-		TextColor3 = Color3.new(255,255,255),
-		Font = Enum.Font.GothamBold,
-		TextScaled = true,
-		Parent = frame
-	})
-
-	local label = self:Create("TextLabel",{
-		Name = "Title",
-		Text = name or "nill",
-		BackgroundColor3 = Color3.new(0,0,0),
-		BorderColor3 = Color3.new(255,255,255),
-		BorderSizePixel = 1,
-		Size = UDim2.new(0.944,0,0.084,0),
-		Position = UDim2.new(0.028,0,0.013,0),
-		TextColor3 = Color3.new(255,255,255),
-		Font = Enum.Font.GothamBold,
-		TextScaled = true,
-		Parent = frame
-	})
+	self:CreateDefault(name)
 end
 
 return libray
