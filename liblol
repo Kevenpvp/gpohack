@@ -1,0 +1,1830 @@
+local libray = {gui = nil, scrolls = {}, open = true}
+local tweenService = game:GetService("TweenService")
+local runService = game:GetService("RunService")
+local textService = game:GetService('TextService')
+local ViewPortSize = workspace.Camera.ViewportSize
+local uis = game:GetService("UserInputService")
+
+local random = Random.new()
+local letters = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'}
+local functions = {}
+local mouse = game.Players.LocalPlayer:GetMouse()
+local connections = {}
+
+local function getRandomLetter()
+	return letters[random:NextInteger(1,#letters)]
+end
+
+local function getRandomString(length, includeCapitals)
+	local length = length or 10
+	local str = ''
+	for i=1,length do
+		local randomLetter = getRandomLetter()
+		if includeCapitals and random:NextNumber() > .5 then
+			randomLetter = string.upper(randomLetter)
+		end
+		str = str .. randomLetter
+	end
+	return str
+end
+
+local function OffsetToScale(Offset)
+	return UDim2.new(Offset[1] / ViewPortSize.X,0,Offset[2] / ViewPortSize.Y,0)
+end
+
+function libray:Create(class,properties)
+	local instance = Instance.new(class)
+	properties = typeof(properties) == "table" and properties or {}
+	for i,v in pairs(properties) do
+		instance[i] = v
+	end
+	return instance
+end
+
+functions["button"] = function(parent,configs,list)
+	
+	local textbutton = libray:Create("TextButton",{
+		Name = ""..configs.position + 1,
+		Text = configs.text,
+		Size = UDim2.new(0.8,0,0.096,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		TextScaled = true,
+		Font = Enum.Font.SourceSansBold,
+		TextColor3 = Color3.fromRGB(22, 22, 22),
+		ZIndex = 2,
+		Parent = parent
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 16.48,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textbutton
+	})
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = "TextButton_Roundify_12px",
+		Size = UDim2.new(0.8,0,0.8,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.120,
+		ZIndex = 1,
+		Parent = textbutton
+	})
+	
+	local uigradient = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = imagelabel
+	})
+	
+	local function clickFunction()
+		if not list.Visible then
+			local tween = tweenService:Create(imagelabel,TweenInfo.new(0.1,Enum.EasingStyle.Bounce,Enum.EasingDirection.InOut),{
+				Rotation = 2
+			})
+
+			tween.Completed:Connect(function()
+				tween = tweenService:Create(imagelabel,TweenInfo.new(0.1,Enum.EasingStyle.Bounce,Enum.EasingDirection.InOut),{
+					Rotation = -2
+				})
+				tween.Completed:Connect(function()
+					tween = tweenService:Create(imagelabel,TweenInfo.new(0.1,Enum.EasingStyle.Bounce,Enum.EasingDirection.InOut),{
+						Rotation = 0
+					})
+					tween:Play()
+					tween.Completed:Wait()	
+				end)
+				tween:Play()
+			end)
+
+			tween:Play()
+			configs.callback()
+		end
+	end
+	
+	textbutton.MouseButton1Click:Connect(function()
+		clickFunction()
+	end)
+	
+	textbutton.MouseEnter:Connect(function()
+		imagelabel:TweenSize(UDim2.new(1,0,1,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+	end)
+
+	textbutton.MouseLeave:Connect(function()
+		imagelabel:TweenSize(UDim2.new(0.8,0,0.8,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+	end)
+	
+	function configs:SetText(text)
+		configs.text = text
+		textbutton.Text = text
+	end
+	
+	function configs:Click()
+		clickFunction()
+	end
+	
+end
+
+functions["box"] = function(parent,configs)
+	
+	local mainlabel = libray:Create("ImageLabel",{
+		Name = ""..configs.position + 1,
+		Size = UDim2.new(0.8,0,0.433,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.120,
+		ZIndex = 2,
+		Parent = parent
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 3.662,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = mainlabel
+	})
+	
+	local uigradient = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = mainlabel
+	})
+	
+	local frame = libray:Create("Frame",{
+		Name = "frame",
+		Size = UDim2.new(0.98,0,0.95,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 1,
+		Parent = mainlabel
+	})
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = "round",
+		Size = UDim2.new(1,0,1.01,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(38, 38, 38),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		ZIndex = 2,
+		Parent = frame
+	})
+	
+	local frame2 = libray:Create("Frame",{
+		Name = "Frame",
+		Size = UDim2.new(0.886,0,0.66,0),
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5,0,0.95,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Parent = frame
+	})
+	
+	local imagelabel2 = libray:Create("ImageLabel",{
+		Name = "round",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(47, 47, 47),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		ZIndex = 2,
+		Parent = frame2
+	})
+	
+	local scrollingFrame = libray:Create("ScrollingFrame",{
+		Name = "scroll",
+		Size = UDim2.new(0.95,0,0.9,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarImageColor3 = Color3.fromRGB(94,0,0),
+		ScrollBarThickness = 2,
+		CanvasSize = UDim2.new(0,0,0,0),
+		ZIndex = 2,
+		Parent = frame2
+	})
+	
+	local textlabel = libray:Create("TextLabel",{
+		Name = "title",
+		Text = configs.text,
+		Size = UDim2.new(0.326,0,0.2,0),
+		AnchorPoint = Vector2.new(0, 0.5),
+		Position = UDim2.new(0.07,0,0.159,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		TextScaled = true,
+		Font = Enum.Font.SourceSansBold,
+		TextColor3 = Color3.fromRGB(100, 100, 100),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		ZIndex = 2,
+		Parent = frame
+	})
+	
+	local textbox = libray:Create("TextBox",{
+		Name = "box",
+		Text = "",
+		Size = UDim2.new(0.98,0,0,35),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Font = Enum.Font.SourceSansBold,
+		TextColor3 = Color3.fromRGB(255, 255, 255),
+		TextWrapped = true,
+		TextSize = 20,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		MultiLine = true,
+		RichText = true,
+		ZIndex = 2,
+		Parent = scrollingFrame
+	})
+	
+	spawn(function()
+		while runService.Heartbeat:Wait() and parent do
+			textbox.Size = UDim2.new(0.98,0,0,35 + textService:GetTextSize(textbox.Text,20,Enum.Font.SourceSansBold,textbox.AbsoluteSize).Y)
+		end
+	end)
+	
+	frame.MouseEnter:Connect(function()
+		tweenService:Create(imagelabel2,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageColor3 = Color3.fromRGB(57,57,57)
+		}):Play()
+	end)
+	
+	frame.MouseLeave:Connect(function()
+		tweenService:Create(imagelabel2,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageColor3 = Color3.fromRGB(47,47,47)
+		}):Play()
+	end)
+	
+	textbox:GetPropertyChangedSignal("Size"):Connect(function()
+		scrollingFrame.CanvasSize = UDim2.new(0,0,0,textbox.Size.Y.Offset)
+	end)
+	
+	function configs:SetName(text)
+		configs.text = text
+		textlabel.Text = text
+	end
+	
+	function configs:SetText(text)
+		textbox.Text = text
+	end
+	
+end
+
+functions["slider"] = function(parent,configs)
+	
+	local down,click = false,false
+	local round = 1
+	
+	if configs.decimals > 0 then
+		for i = 0, configs.decimals do
+			round = round * 10
+		end
+	end
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = ""..configs.position + 1,
+		Size = UDim2.new(0.8,0,0.24,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(38, 38, 38),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = parent
+	})
+	
+	local uiaspectratioconstraint1 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 6.592,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagelabel
+	})
+	
+	local textbox = libray:Create("TextBox",{
+		Name = "Amount",
+		Text = configs.value,
+		Size = UDim2.new(0.088,0,0.52,0),
+		Position = UDim2.new(0.843,0,0.1,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 3,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(113, 113, 113),
+		Font = Enum.Font.SourceSansBold,
+		Parent = imagelabel
+	})
+	
+	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.115,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textbox
+	})
+	
+	local imagelabel2 = libray:Create("ImageLabel",{
+		Name = "roundify",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(49, 49, 49),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = textbox
+	})
+	
+	local imagelabel3 = libray:Create("ImageLabel",{
+		Name = "Bar",
+		Size = UDim2.new(0.855,0,0.1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.79,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(68, 68, 68),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = imagelabel
+	})
+	
+	local uiaspectratioconstraint3 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 56.388,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagelabel3
+	})
+	
+	local textbutton2 = libray:Create("TextButton",{
+		Name = "scroll",
+		Text = "",
+		Size = UDim2.new(0.035,0,2,0),
+		AnchorPoint = Vector2.new(0,0.5),
+		Position = UDim2.new(0,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 3,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(113, 113, 113),
+		Font = Enum.Font.SourceSansBold,
+		Parent = imagelabel3
+	})
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textbutton2
+	})
+	
+	local imagelabel4= libray:Create("ImageLabel",{
+		Name = "roundify",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 3,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(83, 83, 83),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		ImageTransparency = 1,
+		Parent = textbutton2
+	})
+	
+	local imagelabel5 = libray:Create("ImageLabel",{
+		Name = "barunder",
+		Size = UDim2.new(0,0,1,0),
+		AnchorPoint = Vector2.new(0,0.5),
+		Position = UDim2.new(0,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = imagelabel3
+	})
+	
+	
+	local uigradient = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = imagelabel5
+	})
+	
+	local textlabel = libray:Create("TextLabel",{
+		Name = "Title",
+		Text = configs.text,
+		Size = UDim2.new(0.203,0,0.58,0),
+		Position = UDim2.new(0.079,0,0.1,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(255, 255, 255),
+		Font = Enum.Font.SourceSansBold,
+		Parent = imagelabel
+	})
+	
+	local uigradient2 = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = textlabel
+	})
+	
+	local function update()
+		local yBorder,yNormal = math.clamp(
+			mouse.X - imagelabel3.AbsolutePosition.X,0,imagelabel3.AbsoluteSize.X - 5
+		),math.clamp(
+			mouse.X - imagelabel3.AbsolutePosition.X,0,imagelabel3.AbsoluteSize.X
+		)
+		textbutton2.Position = UDim2.new(0,yBorder,0.5,0)
+
+		local percentage = yNormal / imagelabel3.AbsoluteSize.X
+		imagelabel5.Size = UDim2.new(percentage,0,1,0)
+		local val = configs.min + (configs.max - configs.min)*percentage
+		configs.value = math.floor((val*round))/round
+		configs.callback(configs.value)
+		textbox.Text = tostring(configs.value)
+	end
+	
+	imagelabel.MouseEnter:Connect(function()
+		tweenService:Create(imagelabel4,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageTransparency = 0
+		}):Play()
+	end)
+	
+	imagelabel.MouseLeave:Connect(function()
+		tweenService:Create(imagelabel4,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageTransparency = 1
+		}):Play()
+	end)
+	
+	
+	uis.InputEnded:Connect(function(input,gameProcessed) 
+		if gameProcessed then return end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			down = false
+		end
+	end)
+	
+	uis.InputBegan:Connect(function(input,gameProcessed)
+		if gameProcessed then return end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if click then
+				update()
+			end
+			if tonumber(textbox.Text) then
+				configs:SetValue(tonumber(textbox.Text))
+			else
+				textbox.Text = configs.value
+			end
+		elseif input.KeyCode == Enum.KeyCode.Return or input.KeyCode == Enum.KeyCode.Unknown or input.KeyCode == Enum.KeyCode.KeypadEnter then
+			if tonumber(textbox.Text) then
+				configs:SetValue(tonumber(textbox.Text))
+			else
+				textbox.Text = configs.value
+			end
+		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+			if tonumber(textbox.Text) then
+				configs:SetValue(tonumber(textbox.Text))
+			else
+				textbox.Text = configs.value
+			end
+		end
+		
+	end)
+	
+	textbutton2.MouseEnter:Connect(function()
+		down = true
+	end)
+	
+	imagelabel3.MouseEnter:Connect(function()
+		click = true
+	end)
+	
+	imagelabel3.MouseLeave:Connect(function()
+		click = false
+	end)
+	
+	
+	function configs:SetText(name)
+		configs.text = name
+		textlabel.Text = name
+	end
+	
+	
+	function configs:SetValue(number)
+		number = math.clamp(number,configs.min,configs.max)
+		number = math.floor((number*round))/round
+		configs.value = number
+		configs.callback(configs.value)
+		textbox.Text = configs.value
+		local percentage = ((configs.value - configs.min)/(configs.max - configs.min))
+		local offset = (imagelabel3.AbsoluteSize.X - 5) * percentage
+		textbutton2.Position = UDim2.new(0,offset,0.5,0)
+		imagelabel5.Size = UDim2.new(percentage,0,1,0)
+	end
+	
+	configs:SetValue(configs.value)
+	
+	mouse.Move:Connect(function()
+		if down and uis:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+			update()
+		end
+	end)
+end
+
+functions["list"] = function(parent,configs)
+	
+	local sizeMax = #configs.values * 20
+	if sizeMax < 30 then
+		sizeMax = 30
+	end
+	
+	local mainframe = libray:Create("Frame",{
+		Name = ""..configs.position + 1,
+		Size = UDim2.new(0.8,0,0.462,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ClipsDescendants = true,
+		ZIndex = 2,
+		Parent = parent
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 8.24,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = mainframe
+	})
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = "lol",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(49,49,49),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = mainframe
+	})
+	
+	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 8.24,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagelabel
+	})
+	
+	local textbutton = libray:Create("TextButton",{
+		Name = "Click",
+		Text = "",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		ZIndex = 2,
+		Parent = mainframe
+	})
+	
+	local uiaspectratioconstraint3 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 8.24,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textbutton
+	})
+	
+	local textlabel = libray:Create("TextLabel",{
+		Name = "Title",
+		Text = configs.text,
+		Size = UDim2.new(0.798,0,0.425,0),
+		Position = UDim2.new(0.064,0,0.03,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		ZIndex = 2,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(100, 100, 100),
+		Font = Enum.Font.SourceSansBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = imagelabel
+	})
+	
+	local textlabel2 = libray:Create("TextLabel",{
+		Name = "Selected",
+		Text = configs.value,
+		Size = UDim2.new(0.798,0,0.475,0),
+		Position = UDim2.new(0.064,0,0.455,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		ZIndex = 2,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(255, 255, 255),
+		Font = Enum.Font.SourceSansBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = imagelabel
+	})
+	
+	local imagebutton = libray:Create("ImageButton",{
+		Name = "Open",
+		Size = UDim2.new(0.092,0,0.578,0),
+		Position = UDim2.new(0.861,0,0.104,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		ZIndex = 3,
+		Image = "http://www.roblox.com/asset/?id=6371802763",
+		Parent = imagelabel
+	})
+	
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagebutton
+	})
+	
+	local frame2 = libray:Create("Frame",{
+		Name = "Options",
+		Size = UDim2.new(1,0,0,sizeMax),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ClipsDescendants = true,
+		ZIndex = 2,
+		Parent = imagelabel
+	})
+	
+	local imagelabel2 = libray:Create("ImageLabel",{
+		Name = "",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(49,49,49),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = frame2
+	})
+	
+	local scrollingframe = libray:Create("ScrollingFrame",{
+		Name = "Scroll",
+		Size = UDim2.new(0.95,0,0.95,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 2,
+		ScrollBarImageColor3 = Color3.fromRGB(255,0,0),
+		CanvasSize = UDim2.new(0,0,0,0),
+		ZIndex = 2,
+		Parent = imagelabel2
+	})
+	
+	local uiListlayout = libray:Create("UIListLayout",{
+		Name = "uilist",
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.Name,
+		Parent = scrollingframe
+	}) 
+	
+	uiListlayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		scrollingframe.CanvasSize = UDim2.new(0,0,0, uiListlayout.AbsoluteContentSize.Y)
+	end)
+	
+	imagebutton.MouseButton1Click:Connect(function()
+		if not configs.open then
+			configs.open = true
+			tweenService:Create(imagebutton,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+				Rotation = 180
+			}):Play()
+			local offset = mainframe.AbsoluteSize.Y + frame2.AbsoluteSize.Y
+			local size = offset / parent.AbsoluteSize.Y 
+			tweenService:Create(uiaspectratioconstraint,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+				AspectRatio = mainframe.AbsoluteSize.X / offset
+			}):Play()
+			return
+		end	
+		configs.open = false
+		tweenService:Create(imagebutton,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+			Rotation = 0
+		}):Play()
+		tweenService:Create(uiaspectratioconstraint,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+			AspectRatio = 8.24
+		}):Play()
+	end)
+	
+	local function disableOthers(actual)
+		for i,v in pairs(scrollingframe:GetChildren())do
+			if v:IsA("TextButton") and v ~= actual then
+				v.UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(0.73, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
+				v.TextColor3 = Color3.fromRGB(255,255,255)
+			end
+		end
+	end
+	
+	local function enableNew(button)
+		configs.open = false
+		configs.value = button.Text
+		
+		configs.callback(configs.value)
+
+		textlabel2.Text = button.Text
+
+		configs.open = false
+		
+		tweenService:Create(imagebutton,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+			Rotation = 0
+		}):Play()
+		tweenService:Create(uiaspectratioconstraint,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+			AspectRatio = 8.24
+		}):Play()
+
+		tweenService:Create(button,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+			TextColor3 = Color3.fromRGB(255,255,255)
+		}):Play()
+
+		button.UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))}
+
+		disableOthers(button)
+	end
+	
+	local function addItems(index,name)
+		local textbuttonLoop = libray:Create("TextButton",{
+			Name = index,
+			Text = name,
+			Size = UDim2.new(0.950,0,0.316,0),
+			BackgroundColor3 = Color3.fromRGB(255,255,255),
+			BackgroundTransparency = 1,
+			TextScaled = true,
+			Font = Enum.Font.SourceSansBold,
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+			TextXAlignment = Enum.TextXAlignment.Left,
+			BorderSizePixel = 0,
+			ZIndex = 3,
+			Parent = scrollingframe
+		})
+		
+		local uiaspectratioconstraint1 = libray:Create("UIAspectRatioConstraint",{
+			AspectRatio = mainframe.AbsoluteSize.X / 30,
+			AspectType = Enum.AspectType.ScaleWithParentSize,
+			DominantAxis = Enum.DominantAxis.Width,
+			Parent = textbuttonLoop
+		})
+		
+		local imageLabelLoop = libray:Create("ImageLabel",{
+			Name = "round",
+			Size = UDim2.new(1.05,0,1,0),
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5,0,0.5,0),
+			BackgroundColor3 = Color3.fromRGB(255,255,255),
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			Image = "rbxassetid://3570695787",
+			ImageColor3 = Color3.fromRGB(49, 49, 49),
+			ScaleType = Enum.ScaleType.Slice,
+			SliceCenter = Rect.new(100, 100, 100, 100),
+			ZIndex = 2,
+			SliceScale = 0.12,
+			Parent = textbuttonLoop
+		})
+
+		local uigradientloop = libray:Create("UIGradient",{
+			Parent = textbuttonLoop
+		})
+
+		if name == configs.value then
+			uigradientloop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))}
+		end
+
+		imageLabelLoop.MouseEnter:Connect(function()
+			tweenService:Create(imageLabelLoop,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+				ImageColor3 = Color3.fromRGB(24, 24, 24)
+			}):Play()
+			if name ~= configs.value then
+				tweenService:Create(textbuttonLoop,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+					TextColor3 = Color3.fromRGB(0,0,0)
+				}):Play()
+			end
+		end)
+
+		imageLabelLoop.MouseLeave:Connect(function()
+			tweenService:Create(imageLabelLoop,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+				ImageColor3 = Color3.fromRGB(49, 49, 49)
+			}):Play()
+			if name ~= configs.value then
+				tweenService:Create(textbuttonLoop,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+					TextColor3 = Color3.fromRGB(255,255,255)
+				}):Play()
+			end
+		end)
+
+		textbuttonLoop.MouseButton1Click:Connect(function()
+			enableNew(textbuttonLoop)
+		end)
+	end
+	
+	for i,v in pairs(configs.values)do
+		addItems(i,v)
+	end
+	
+	if configs.open then
+		local offset = mainframe.AbsoluteSize.Y + frame2.AbsoluteSize.Y
+		local size = offset / parent.AbsoluteSize.Y 
+		uiaspectratioconstraint.AspectRatio = mainframe.AbsoluteSize.X / offset
+	end
+	
+	mainframe.MouseEnter:Connect(function()
+		tweenService:Create(imagelabel,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageColor3 = Color3.fromRGB(57,57,57)
+		}):Play()
+	end)
+
+	mainframe.MouseLeave:Connect(function()
+		tweenService:Create(imagelabel,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageColor3 = Color3.fromRGB(47,47,47)
+		}):Play()
+	end)
+
+	function configs:SetText(text)
+		configs.text = text
+		textlabel.Text = text
+	end
+
+	function configs:SetValue(value)
+		for i = 1, #configs.values do
+			local b = scrollingframe:FindFirstChild(i) 
+			if b and b.Text == value then
+				enableNew(b)
+			end
+		end
+	end
+
+	function configs:AddValue(value)
+
+		for _,v in pairs(scrollingframe:GetChildren())do
+			if v:IsA("TextButton") and v.Text == tostring(value) then
+				break
+			end
+		end
+		table.insert(configs.values,tostring(value))
+		sizeMax = math.min(sizeMax + 30,250)
+		addItems(#configs.values,value)
+		print(#configs.values)
+		frame2.Size = UDim2.new(0.98,0,0,sizeMax)
+
+		if configs.open then
+			local offset = mainframe.AbsoluteSize.Y + frame2.AbsoluteSize.Y
+			local size = offset / parent.AbsoluteSize.Y 
+			uiaspectratioconstraint.AspectRatio = mainframe.AbsoluteSize.X / offset
+		end
+
+	end
+
+	function configs:RemoveValue(value)
+		for i = 1, #configs.values do
+			local b = scrollingframe:FindFirstChild(i) 
+			if b and b.Text == value then
+				table.remove(configs.values,i)
+				sizeMax = math.max(sizeMax - 30,45)
+				b:Destroy()
+				if value == configs.value then
+					if #scrollingframe:GetChildren() > 1 then
+						enableNew(scrollingframe:GetChildren()[2])
+					else
+						configs.value = 0
+						textlabel2.Text = ""
+					end
+				end
+				frame2.Size = UDim2.new(0.98,0,0,sizeMax)
+				if configs.open then
+					local offset = mainframe.AbsoluteSize.Y + frame2.AbsoluteSize.Y
+					local size = offset / parent.AbsoluteSize.Y 
+					uiaspectratioconstraint.AspectRatio = mainframe.AbsoluteSize.X / offset
+				end
+				break
+			end
+		end
+	end
+	
+	return configs
+end
+
+functions["toggle"] = function(parent,configs) 
+	local mainframe = libray:Create("Frame",{
+		Name = ""..configs.position + 1,
+		Size = UDim2.new(0.8,0,0.12,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ClipsDescendants = true,
+		ZIndex = 2,
+		Parent = parent
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 13.184,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = mainframe
+	})
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = "round",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(49,49,49),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = mainframe
+	})
+	
+	local imagelabel2 = libray:Create("ImageLabel",{
+		Name = "back",
+		Size = UDim2.new(0.152,0,0.8,0),
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.new(0.98,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = imagelabel
+	})
+	
+	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 2.5,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagelabel2
+	})
+	
+	local uigradientG = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 80, 80)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(80, 80, 80))},
+		Parent = imagelabel2		
+	})
+	
+	local textbutton = libray:Create("TextButton",{
+		Text = "",
+		Size = UDim2.new(0.48,0,1,0),
+		Position = UDim2.new(0.07,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Parent = imagelabel2
+	})
+	
+	local uiaspectratioconstraint3 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.043,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textbutton
+	})
+	
+	local imagelabel3 = libray:Create("ImageLabel",{
+		Name = "back",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(24, 24, 24),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = textbutton
+	})
+	
+	local textlabel = libray:Create("TextLabel",{
+		Name = "Title",
+		Text = configs.text,
+		Size = UDim2.new(0.355,0,1,0),
+		AnchorPoint = Vector2.new(0, 0.5),
+		Position = UDim2.new(0.042,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(255,255,255),
+		Font = Enum.Font.SourceSansBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = imagelabel
+	})
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 4.68,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textlabel
+	})
+	
+	local uigradient = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = textlabel
+	})
+	
+	imagelabel.MouseEnter:Connect(function()
+		tweenService:Create(imagelabel,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageColor3 = Color3.fromRGB(57,57,57)
+		}):Play()
+	end)
+
+	imagelabel.MouseLeave:Connect(function()
+		tweenService:Create(imagelabel,TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+			ImageColor3 = Color3.fromRGB(49,49,49)
+		}):Play()
+	end)
+	
+	function configs:SetText(name)
+		configs.text = name
+		textlabel.Text = configs.text
+	end
+	
+	textbutton.MouseButton1Click:Connect(function()
+		configs:SetState(not configs.state)
+	end)
+	
+	function configs:SetState(state)
+		configs.state = state
+		configs.callback(configs.state)
+		if configs.state then
+			uigradientG.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))}
+			textbutton:TweenPosition(UDim2.new(0.53,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+			return
+		end
+		uigradientG.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 80, 80)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(80, 80, 80))}
+		textbutton:TweenPosition(UDim2.new(0.07,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+	end
+	
+	configs:SetState(configs.state)
+	
+end
+
+local function changeScroll(scroll)
+	if not scroll.selected then
+		for _,v in pairs(libray.scrolls) do
+			if v.content ~= scroll.content then
+				v.selected = false
+				v.content.Visible = false
+				tweenService:Create(v.label,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+					TextColor3 = Color3.fromRGB(255,255,255)
+				}):Play()
+				v.label.UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(0.73, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
+			end
+		end
+		
+		scroll.selected = true
+		tweenService:Create(scroll.label,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+			TextColor3 = Color3.fromRGB(255,255,255)
+		}):Play()
+		scroll.label.UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))}
+		scroll.content.Visible = true
+	end
+end
+
+local function createScrolling(scroll,parent,list,i)
+	local scrollingframe = libray:Create("ScrollingFrame",{
+		Name = "scroll"..scroll.title,
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		CanvasSize = UDim2.new(0,0,0,0),
+		ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0),
+		ScrollBarThickness = 2,
+		ZIndex = 1,
+		Visible = false,
+		Parent = parent
+	}) 
+	
+	local uilistlayout = libray:Create("UIListLayout",{
+		Padding = UDim.new(0,5),
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.Name,
+		Parent = scrollingframe
+	})
+	
+	local frame = libray:Create("Frame",{
+		Name = "1",
+		Size = UDim2.new(1,0,0.029,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		ZIndex = 1,
+		BorderSizePixel = 0,
+		Parent = scrollingframe
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 68.667,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = frame
+	})
+	
+	local textlabel = libray:Create("TextLabel",{
+		Name = ""..i,
+		Text = scroll.title,
+		Size = UDim2.new(1,0,0.133,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		TextScaled = true,
+		Font = Enum.Font.SourceSansBold,
+		TextColor3 = Color3.fromRGB(255,255,255),
+		ZIndex = 4,
+		Parent = list
+	})
+	
+	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 3.667,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textlabel
+	})
+		
+	local textbutton2 = libray:Create("TextButton",{
+		Name = "click",
+		Text = "",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 4,
+		Parent = textlabel
+	})	
+		
+	local uigradient = libray:Create("UIGradient",{
+		Parent = textlabel
+	})
+	
+	if scroll.selected then
+		scrollingframe.Visible = true
+		uigradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))}
+	end
+	
+	scroll.content = scrollingframe
+	
+	scroll.label = textlabel
+	
+	textlabel.MouseEnter:Connect(function()
+		if not scroll.selected then
+			tweenService:Create(textlabel,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+				TextColor3 = Color3.fromRGB(0,0,0)
+			}):Play()
+		end
+	end)
+
+	textlabel.MouseLeave:Connect(function()
+		if not scroll.selected then
+			tweenService:Create(textlabel,TweenInfo.new(0.3,Enum.EasingStyle.Linear,Enum.EasingDirection.In),{
+				TextColor3 = Color3.fromRGB(255,255,255)
+			}):Play()
+		end
+	end)
+	
+	textbutton2.MouseButton1Click:Connect(function()
+		changeScroll(scroll)
+	end)
+	
+	uilistlayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		scrollingframe.CanvasSize = UDim2.new(0, 0, 0,uilistlayout.AbsoluteContentSize.Y)
+	end)
+	
+end
+
+local function getFunctions(parent)
+	function parent:AddButton(configs)
+		configs = typeof(configs) == "table" and configs or {}
+		configs.text = tostring(configs.text)
+		configs.type = "button"
+		configs.callback = typeof(configs.callback) == "function" and configs.callback or function() end
+		configs.position = #self.components + 1
+		
+		table.insert(self.components,configs)
+		return configs
+	end
+	
+	function parent:AddSlider(configs)
+		configs = typeof(configs) == "table" and configs or {}
+		configs.text = tostring(configs.text)
+		configs.type = "slider"
+		configs.position = #self.components + 1
+		configs.min = typeof(configs.min) == "number" and configs.min or 0
+		configs.callback = typeof(configs.callback) == "function" and configs.callback or function() end
+		configs.max = typeof(configs.max) == "number" and configs.max or 0
+		configs.value = math.clamp(typeof(configs.value) == "number" and configs.value or configs.min, configs.min, configs.max)
+		configs.decimals = math.clamp(typeof(configs.decimal) == "number" and configs.decimal or 0,0,5)
+		table.insert(self.components,configs)
+		return configs
+	end
+	
+	function parent:AddBox(configs)
+		configs = typeof(configs) == "table" and configs or {}
+		configs.text = tostring(configs.text)
+		configs.type = "box"
+		configs.position = #self.components + 1
+		table.insert(self.components,configs)
+		return configs
+	end
+	
+	function parent:AddList(configs)
+		configs = typeof(configs) == "table" and configs or {}
+		configs.text = tostring(configs.text)
+		configs.position = #self.components + 1
+		configs.values = typeof(configs.values) == "table" and configs.values or {}
+		configs.value = configs.value
+		configs.callback = typeof(configs.callback) == "function" and configs.callback or function() end
+		configs.open = type(configs.open) == "boolean" and configs.open or false
+		configs.type = "list"
+		table.insert(self.components,configs)
+		return configs
+	end
+	
+	function parent:AddToggle(configs)
+		configs = typeof(configs) == "table" and configs or {}
+		configs.text = tostring(configs.text)
+		configs.type = "toggle"
+		configs.position = #self.components + 1
+		configs.state = typeof(configs.state) == "boolean" and configs.state or false
+		configs.callback = typeof(configs.callback) == "function" and configs.callback or function() end
+		table.insert(self.components,configs)
+		return configs
+	end
+	
+end
+
+function libray:CreateDefault(name,list)
+	
+	local close = false
+	local sizes = OffsetToScale({list[1],list[2]})
+
+	local mainframe = libray:Create("Frame",{
+		Name = "frame",
+		Size = sizes,
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 0,
+		ClipsDescendants = true,
+		Parent = libray.gui
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = mainframe.AbsoluteSize.X / mainframe.AbsoluteSize.Y,
+		Parent = mainframe
+	})
+	
+	local frame = libray:Create("Frame",{
+		Name = "List",
+		Size = UDim2.new(0.267,0,1,0),
+		Position = UDim2.new(-0.243,0,0,0),
+		BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+		Visible = false,
+		ZIndex = 4,
+		Parent = mainframe
+	})
+	
+	local uilistlayout= libray:Create("UIListLayout",{
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.Name,
+		Parent = frame
+	})
+	
+	local frame2 = libray:Create("Frame",{
+		Name = "1",
+		Size = UDim2.new(1,0,0.1,0),
+		BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 1,
+		Parent = frame
+	})
+	
+	local textbuttonList = libray:Create("TextButton",{
+		Name = "1",
+		Text = "",
+		Size = UDim2.new(0.25,0,0.85,0),
+		AnchorPoint = Vector2.new(1,0.5),
+		Position = UDim2.new(1,0,0.5,0),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 4,
+		Parent = frame2
+	})
+	
+	local uiaspectratioconstraintMain = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.294,
+		Parent = textbuttonList
+	})
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = "TextButton_Roundify_12px",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.120,
+		ZIndex = 4,
+		Parent = textbuttonList
+	})
+	
+	local uigradient = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = imagelabel
+	})
+	
+	local scrollingframe = libray:Create("ScrollingFrame",{
+		Name = "2",
+		Size = UDim2.new(1,0,0.9,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		CanvasSize = UDim2.new(0,0,0,0),
+		ScrollBarImageColor3 = Color3.fromRGB(255,0,0),
+		ScrollBarThickness = 2,
+		ZIndex = 2,
+		Parent = frame
+	})
+	
+	local uilistlayoutList = libray:Create("UIListLayout",{
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		Parent = scrollingframe
+	})
+	
+	local frame3 = libray:Create("Frame",{
+		Name = "Background",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = mainframe
+	})
+	
+	local uilistlayoutst = libray:Create("UIListLayout",{
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.Name,
+		Parent = frame3
+	})
+	
+	local frame4 = libray:Create("Frame",{
+		Name = "1",
+		Size = UDim2.new(1,0,0.048,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = frame3
+	})
+	
+	local uigradient2 = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = frame4
+	})
+	
+	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 34.333,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		Parent = frame4
+	})
+	
+	local frame5 = libray:Create("Frame",{
+		Name = "2",
+		Size = UDim2.new(1,0,0.12,0),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = frame3
+	})
+	
+	local uiaspectratioconstraint3 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 13.733,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		Parent = frame5
+	})
+	
+	local uilistlayout3 = libray:Create("UIListLayout",{
+		HorizontalAlignment = Enum.HorizontalAlignment.Left,
+		SortOrder = Enum.SortOrder.Name,
+		FillDirection = Enum.FillDirection.Horizontal,
+		Parent = frame5
+	})
+	
+	local frame6 = libray:Create("Frame",{
+		Name = "1",
+		Size = UDim2.new(0.268,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = frame5
+	})
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 3.667,
+		Parent = frame6
+	})
+	
+	local textlabel = libray:Create("TextLabel",{
+		Name = "TextLabel",
+		Text = name,
+		Size = UDim2.new(1,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		TextColor3 = Color3.fromRGB(255,255,255),
+		TextScaled = true,
+		Font = Enum.Font.SourceSansBold,
+		BorderSizePixel = 0,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		ZIndex = 1,
+		Parent = frame6
+	})
+	
+	local listButton = libray:Create("TextButton",{
+		Name = "open",
+		Text = "",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		ZIndex = 1,
+		Parent = textlabel
+	})
+	
+	local uigradient3 = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = textlabel
+	})
+	
+	local frame7 = libray:Create("Frame",{
+		Name = "2",
+		Size = UDim2.new(0.646,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = frame5
+	})
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 8.833,
+		Parent = frame7
+	})
+	
+	local textbutton = libray:Create("TextButton",{
+		Name = "TextButton",
+		Text = "Search",
+		Size = UDim2.new(0.95,0,0.8,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		TextScaled = true,
+		Font = Enum.Font.SourceSansBold,
+		BorderSizePixel = 0,
+		TextColor3 = Color3.fromRGB(113, 113, 113),
+		TextXAlignment = Enum.TextXAlignment.Center,
+		ZIndex = 2,
+		Parent = frame7
+	})
+	
+	local imagelabelclose = libray:Create("ImageLabel",{
+		Name = "TextButton_Roundify_12px",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(49, 49, 49),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.120,
+		ZIndex = 1,
+		Parent = textbutton
+	})
+	
+	
+	local frame8 = libray:Create("Frame",{
+		Name = "3",
+		Size = UDim2.new(0.085,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = frame5
+	})
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.167,
+		Parent = frame8
+	})
+	
+	local textbuttonMain = libray:Create("TextButton",{
+		Name = "TextButton",
+		Text = "",
+		Size = UDim2.new(0.75,0,0.75,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Parent = frame8
+	})
+	
+	local uiaspectratioconstraintMain = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.167,
+		Parent = textbuttonMain
+	})
+	
+	local imagelabelclose2 = libray:Create("ImageLabel",{
+		Name = "TextButton_Roundify_12px",
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255,255,255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.120,
+		ZIndex = 1,
+		Parent = textbuttonMain
+	})
+	
+	local uigradient4 = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))},
+		Parent = imagelabelclose2
+	})
+	
+	
+	local TopSize = frame4.AbsoluteSize.Y + frame5.AbsoluteSize.Y
+	local TargetSize = mainframe.AbsoluteSize.Y - TopSize
+	
+	
+	local frame9 = libray:Create("Frame",{
+		Name = "3",
+		Size = UDim2.new(1,0,0,TargetSize),
+		BackgroundColor3 = Color3.fromRGB(24,24,24),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+		ZIndex = 1,
+		Parent = frame3
+	})
+	
+	listButton.MouseButton1Click:Connect(function()
+		if not frame.Visible then
+			frame.Visible = true
+			frame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true,function()
+				close = false
+			end)
+			return
+		end
+		close = true
+		frame:TweenPosition(UDim2.new(-0.243,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true,function()
+			frame.Visible = false
+		end)
+	end)
+	
+	textbuttonList.MouseButton1Click:Connect(function()
+		frame:TweenPosition(UDim2.new(-0.243,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true,function()
+			frame.Visible = false
+		end)
+	end)
+	
+	textbuttonMain.MouseButton1Click:Connect(function()
+		if not frame9.Visible then
+			frame9.Visible = true
+			frame9:TweenSize(UDim2.new(1,0,0,TargetSize),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+			return
+		end
+		frame9:TweenSize(UDim2.new(1,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true,function()
+			frame9.Visible = false
+		end)
+	end)
+	
+	textlabel.MouseEnter:Connect(function()
+		textlabel:TweenPosition(UDim2.new(0,0,-0.133,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+	end)
+	
+	textlabel.MouseLeave:Connect(function()
+		textlabel:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.In,Enum.EasingStyle.Linear,0.2,true)
+	end)
+	
+	
+	uilistlayoutList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		scrollingframe.CanvasSize = UDim2.new(0, 0, 0, uilistlayoutList.AbsoluteContentSize.Y)
+	end)
+	
+	mainframe:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		local TopSize = frame4.AbsoluteSize.Y + frame5.AbsoluteSize.Y
+		TargetSize = mainframe.AbsoluteSize.Y - TopSize
+		if not close then
+			frame9.Size = UDim2.new(1,0,0,TargetSize)
+		end
+	end)
+	
+	local dragging
+	local dragInput
+	local dragStart
+	local startPos
+	
+	local function update(input)
+		local delta = input.Position - dragStart
+		mainframe.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+
+	mainframe.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = mainframe.Position
+
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+
+	mainframe.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+
+	uis.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			update(input)
+		end
+	end)
+	
+end
+
+function libray:CreateScroll(title)
+	local scroll
+	if not libray.scrolls[1] then
+		scroll = {title = tostring(title), components = {}, selected = true, position = 1, content = nil, label = nil}
+	else
+		scroll = {title = tostring(title), components = {}, selected = false, position = 1, content = nil, label = nil}
+	end
+	
+	getFunctions(scroll)
+	
+	table.insert(libray.scrolls,scroll)
+	
+	return scroll
+	
+end
+
+local function loadComponents(parent,configs,list)
+	functions[configs.type](parent,configs,list)
+end
+
+function libray:Init(name,list)
+
+	self.base = self.base or self:Create("ScreenGui")
+	self.base.Name = getRandomString(10,true)
+
+	--[[
+	if syn and syn.protect_gui then
+		syn.protect_gui(self.base)
+	elseif get_hidden_gui and get_hidden_gui(self.base) then
+		get_hidden_gui(self.base)
+	end
+    -]]
+
+    self.base.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+	--self.base.Parent = game:GetService"CoreGui"
+	libray.gui = self.base
+
+	libray:CreateDefault(name,list)
+	
+	for i,v in pairs(libray.scrolls) do
+		createScrolling(v,libray.gui.frame.Background["3"],libray.gui.frame.List["2"],i)
+		for _,v2 in pairs(v.components) do
+			loadComponents(v.content,v2,libray.gui.frame.List)
+		end
+	end
+end
+
+function libray:AddConnection(name,funct)
+	if typeof(funct) == "function" then
+		connections[name] = funct
+	end
+end
+
+function libray:Destroy()
+	for _,v in pairs(connections)do
+		v:Disconnect()
+	end
+	libray.gui:Destroy()
+	libray = nil
+	self = nil
+end
+
+return libray
