@@ -1818,6 +1818,12 @@ function libray:AddConnection(name,funct)
 	end
 end
 
+function libray:ReloadConnection(name)
+	if connections[name] then
+		connections[name] = connections[name]
+	end
+end
+
 function libray:Destroy()
 	for _,v in pairs(connections)do
 		v:Disconnect()
@@ -1826,5 +1832,53 @@ function libray:Destroy()
 	libray = nil
 	self = nil
 end
+
+local misc = libray:CreateScroll("Misc")
+
+misc:AddButton({
+	text = "Destroy",
+	callback = function()
+		libray:Destroy()
+	end
+})
+
+misc:AddSlider({
+	text = "Speed",
+	callback = function(value)
+		
+	end,
+	min = 20,
+	max = 100,
+	value = 0
+})
+
+misc:AddBox({
+	text = "webhook"
+})
+
+misc:AddToggle({
+	text = "Haki",
+	callback = function(state)
+		
+	end,
+	state = true
+})
+
+local list = misc:AddList({
+	text = "Styles",
+	callback = function(value)
+		
+	end,
+	values = {
+		"None",
+		"Rokushiki",
+		"LOl"
+	},
+	value = "None"
+})
+
+libray:CreateScroll("Auto Farm")
+
+libray:Init("Keven lairs",{450,250})
 
 return libray
