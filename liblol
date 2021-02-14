@@ -1790,16 +1790,15 @@ function libray:Init(name,list)
 	self.base = self.base or self:Create("ScreenGui")
 	self.base.Name = getRandomString(10,true)
 
-	--[[
 	if syn and syn.protect_gui then
 		syn.protect_gui(self.base)
 	elseif get_hidden_gui and get_hidden_gui(self.base) then
 		get_hidden_gui(self.base)
 	end
-    -]]
-
-    self.base.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-	--self.base.Parent = game:GetService"CoreGui"
+	
+	
+	self.base.Parent = game:GetService("CoreGui")
+	self.base.ResetOnSpawn = false
 	libray.gui = self.base
 
 	libray:CreateDefault(name,list)
