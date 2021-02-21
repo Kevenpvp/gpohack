@@ -1798,8 +1798,8 @@ function libray:Init(name,list)
 		get_hidden_gui(self.base)
 	end
 	
-	
-	self.base.Parent = game:GetService("CoreGui")
+	self.base.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+	--self.base.Parent = game:GetService("CoreGui")
 	self.base.ResetOnSpawn = false
 	libray.gui = self.base
 
