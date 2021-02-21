@@ -1296,7 +1296,7 @@ function libray:CreateFolder(parent,configs)
 		ScaleType = Enum.ScaleType.Slice,
 		SliceCenter = Rect.new(100, 100, 100, 100),
 		SliceScale = 0.12,
-		ClipDescendants = true,
+		ClipsDescendants = true,
 		Parent = parent
 	})
 	
