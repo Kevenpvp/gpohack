@@ -794,7 +794,6 @@ functions["list"] = function(parent,configs)
 	local function enableNew(button)
 		configs.open = false
 		configs.value = button.Text
-		print("Setted value to"..configs.value)
 
 		textlabel2.Text = button.Text
 
@@ -921,11 +920,9 @@ functions["list"] = function(parent,configs)
 	end
 
 	function configs:SetValue(value)
-		print("lol set")
 		for i = 1, #configs.values do
 			local b = scrollingframe:FindFirstChild(i) 
 			if b and b.Text == value then
-				print("enable lol "..b.Text)
 				enableNew(b)
 			end
 		end
@@ -941,7 +938,6 @@ functions["list"] = function(parent,configs)
 		table.insert(configs.values,tostring(value))
 		sizeMax = math.min(sizeMax + 30,250)
 		addItems(#configs.values,value)
-		print(#configs.values)
 		frame2.Size = UDim2.new(0.98,0,0,sizeMax)
 
 		if configs.open then
@@ -1801,8 +1797,8 @@ function libray:Init(name,list)
 		get_hidden_gui(self.base)
 	end
 	
-	self.base.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-	--self.base.Parent = game:GetService("CoreGui")
+	
+	self.base.Parent = game:GetService("CoreGui")
 	self.base.ResetOnSpawn = false
 	libray.gui = self.base
 
