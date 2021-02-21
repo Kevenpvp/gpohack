@@ -920,9 +920,11 @@ functions["list"] = function(parent,configs)
 	end
 
 	function configs:SetValue(value)
+		print("lol set")
 		for i = 1, #configs.values do
 			local b = scrollingframe:FindFirstChild(i) 
 			if b and b.Text == value then
+				print("enable lol "..b.Text)
 				enableNew(b)
 			end
 		end
