@@ -795,8 +795,6 @@ functions["list"] = function(parent,configs)
 		configs.open = false
 		configs.value = button.Text
 		print("Setted value to"..configs.value)
-		
-		configs.callback(configs.value)
 
 		textlabel2.Text = button.Text
 
@@ -816,6 +814,8 @@ functions["list"] = function(parent,configs)
 		button.UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 85, 0))}
 
 		disableOthers(button)
+		
+		configs.callback(configs.value)
 	end
 	
 	local function addItems(index,name)
