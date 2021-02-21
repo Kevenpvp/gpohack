@@ -794,6 +794,7 @@ functions["list"] = function(parent,configs)
 	local function enableNew(button)
 		configs.open = false
 		configs.value = button.Text
+		print("Setted value to"..configs.value)
 		
 		configs.callback(configs.value)
 
