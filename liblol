@@ -1142,6 +1142,10 @@ functions["toggle"] = function(parent,configs)
 	
 end
 
+functions["folder"] = function(parent,configs)
+	configs:Init()
+end
+
 local function changeScroll(scroll)
 	if not scroll.selected then
 		for _,v in pairs(libray.scrolls) do
@@ -1278,6 +1282,140 @@ local function createScrolling(scroll,parent,list,i)
 	
 end
 
+function libray:CreateFolder(parent,configs)
+	
+	local mainlabel = libray:Create("ImageLabel",{
+		Name = ""..configs.position + 1,
+		Size = UDim2.new(1,0,0.192,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		ClipDescendants = true,
+		Parent = parent
+	})
+	
+	local uiaspectratioconstraint = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 10.3,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = mainlabel
+	})
+	
+	local uigradientG = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 80, 80)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(80, 80, 80))},
+		Parent = mainlabel		
+	})
+	
+	local imagelabel = libray:Create("ImageLabel",{
+		Name = "background",
+		Size = UDim2.new(0.99,0,0.97,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(24, 24, 24),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = mainlabel
+	})
+	
+	local uiaspectratioconstraint2 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 10.512,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagelabel
+	})
+	
+	local scrollingframe = libray:Create("ScrollingFrame",{
+		Name = "options",
+		Size = UDim2.new(1.005,0,0,100),
+		AnchorPoint = Vector2.new(0.5,0),
+		Position = UDim2.new(0.5,0,1,0),
+		BackgroundColor3 = Color3.fromRGB(36, 36, 36),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		CanvasSize = UDim2.new(0,0,0,0),
+		ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0),
+		ScrollBarThickness = 2,
+		ZIndex = 2,
+		Parent = imagelabel
+	})
+	
+	local uilistlayout = libray:Create("UIListLayout",{
+		Padding = UDim.new(0,5),
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.Name,
+		Parent = scrollingframe
+	})
+	
+	local textbutton = libray:Create("TextButton",{
+		Name = "click",
+		Text = configs.title,
+		Size = UDim2.new(1,0,1,0),
+		AnchorPoint = Vector2.new(0.5,0.5),
+		Position = UDim2.new(0.5,0,0.5,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		TextScaled = true,
+		Font = Enum.Font.SourceSansBold,
+		TextColor3 = Color3.fromRGB(255,255,255),
+		BorderSizePixel = 0,
+		ZIndex = 2,
+		Parent = imagelabel
+	})	
+	
+	local uiaspectratioconstraint3 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 10.512,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = textbutton
+	})
+	
+	local imagelabel2 = libray:Create("ImageLabel",{
+		Name = "round",
+		Size = UDim2.new(0.061,0,0.515,0),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 1,
+		ZIndex = 2,
+		Image = "rbxassetid://3570695787",
+		ImageColor3 = Color3.fromRGB(255, 255, 255),
+		ScaleType = Enum.ScaleType.Slice,
+		SliceCenter = Rect.new(100, 100, 100, 100),
+		SliceScale = 0.12,
+		Parent = textbutton
+	})
+	
+	local uiaspectratioconstraint4 = libray:Create("UIAspectRatioConstraint",{
+		AspectRatio = 1.25,
+		AspectType = Enum.AspectType.ScaleWithParentSize,
+		DominantAxis = Enum.DominantAxis.Width,
+		Parent = imagelabel2
+	})
+	
+	local uigradient2 = libray:Create("UIGradient",{
+		Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 80, 80)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(80, 80, 80))},
+		Parent = imagelabel2		
+	})
+	
+	configs.content = scrollingframe
+	
+end
+
+local function loadComponents(parent,configs,list)
+	functions[configs.type](parent,configs,list)
+end
+
 local function getFunctions(parent)
 	function parent:AddButton(configs)
 		configs = typeof(configs) == "table" and configs or {}
@@ -1335,6 +1473,27 @@ local function getFunctions(parent)
 		configs.callback = typeof(configs.callback) == "function" and configs.callback or function() end
 		table.insert(self.components,configs)
 		return configs
+	end
+	
+	function parent:AddFolder(title)
+		local configs = {}
+		configs.title = tostring(title)
+		configs.components = {}
+		configs.open = false
+		configs.type = "folder"
+		configs.position = #self.components + 1
+		configs.content = nil
+		table.insert(self.components, configs)
+		
+		getFunctions(configs)
+		
+		function configs:Init()
+			libray:CreateFolder(parent,configs)
+			for _,v2 in pairs(configs.components) do
+				loadComponents(configs.content,v2)
+			end
+		end
+		
 	end
 	
 end
@@ -1780,10 +1939,6 @@ function libray:CreateScroll(title)
 	
 	return scroll
 	
-end
-
-local function loadComponents(parent,configs,list)
-	functions[configs.type](parent,configs,list)
 end
 
 function libray:Init(name,list)
